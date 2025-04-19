@@ -135,54 +135,9 @@ for(x in unique(tsvlist)){
 
 library(tidyverse)
 
-# Function to read and parse the FASTA file
-# parse_fasta <- function(fasta_file) {
-#   # Read the FASTA file
-#   fasta_lines <- readLines(fasta_file)
-# 
-#   # Initialize an empty data frame to store parsed data
-#   parsed_df <- data.frame(
-#     identifier = character(),
-#     sp = character(),
-#     id = character(),
-#     name = character(),
-#     description = character(),
-#     stringsAsFactors = FALSE
-#   )
-# 
-#   # Parse each line
-#   for (line in fasta_lines) {
-#     if (startsWith(line, ">")) {
-#       # Split the identifier line at each instance of "|"
-#       split_line <- strsplit(sub("^>", "", line), split = "\\|")[[1]]
-# 
-#       # Extract columns
-#       sp <- split_line[1]
-#       id <- split_line[2]
-#       description <- split_line[3]
-# 
-#       # Extract additional information from the description
-#       name <- strsplit(description, " ", fixed = TRUE)[[1]][1]
-# 
-#       # Add to the data frame
-#       parsed_df <- rbind(parsed_df, data.frame(identifier = line, sp = sp, id = id, name = name, description = description))
-#     }
-#   }
-# 
-#   return(parsed_df)
-# }
-# 
-# parsed_fasta <- parse_fasta("C:/FASTA/HomosapiensPlusAAP9.fasta") 
-
-#there both CID and ETD runs so it correctly parsed the scan types 
 data2 <- data %>%
-   filter(!grepl("rev_sp", Protein)) %>%
-   filter(EValue < 0.1) #checked scan at EValue ~0.03 and there are 3 y-ions 
-
-write.csv(data2, file="C:/Nakai/gluc_hits.csv")
-
-
-
-data3 <- data %>%
-   filter(!grepl("rev_sp", Protein)) %>%
-   filter(grepl("1302", Peptide))
+   group_by(X.SpecFile, Protein) %>%
+   tally() %>%
+   group_by(X.SpecFile) %>%
+   slice_max(n) %>%
+   View()
